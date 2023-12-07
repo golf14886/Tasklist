@@ -23,7 +23,10 @@ function App() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <button className="add-button" onClick={onClickAdd}>
+        <button
+          className="add-button"
+          onClick={inputValue !== "" ? onClickAdd : null}
+        >
           add
         </button>
       </div>

@@ -16,9 +16,11 @@
   grid-template-columns: auto auto auto auto;
 }
 .add-button {
-  margin-top: 1rem;
+  margin-top: 0.5rem;
+  width: 9rem;
 }
 input {
+  height: 3rem;
   margin-top: 3rem;
 }
 .list-item {
