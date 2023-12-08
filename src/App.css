@@ -12,16 +12,14 @@
 .list {
   margin-top: 3rem;
   display: grid;
-  gap: 5rem;
+  gap: 3rem;
   grid-template-columns: auto auto auto auto;
 }
 .add-button {
   margin-top: 0.5rem;
-  width: 9rem;
 }
 input {
   height: 3rem;
-  margin-top: 3rem;
 }
 .list-item {
   background-color: lightgoldenrodyellow;
@@ -29,4 +27,24 @@ input {
   height: 5rem;
   border-radius: 25px 0px;
   padding: 20px;
+  position: relative;
+}
+.list-item div svg {
+  width: 1rem;
+  height: auto;
+  position: absolute;
+  left: auto;
+  right: 0.2rem;
+  top: 0.2rem;
+  bottom: auto;
+}
+.list-item div svg:hover {
+  transform: scale(1.2);
+}
+.addlist {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: auto;
+  bottom: 0;
 }
