@@ -1,14 +1,16 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import "./addlist.css";
+import "./addList.css";
 
-export default function Addlist(props) {
-  const { list, setlist } = props;
+export default function AddList(props) {
+  const { list, setList } = props;
   const [input, setInput] = useState("");
 
-  const addlist = () => {
-    setlist([...list, { text: input, completed: false }]);
-    setInput("");
+  const addList = () => {
+    if (input !== "") {
+      setList([...list, { text: input, completed: false }]);
+      setInput("");
+    }
   };
 
   const onClickCompleted = (index) => {
@@ -18,11 +20,12 @@ export default function Addlist(props) {
       }
       return item;
     });
-    setlist(updatedList);
+
+    setList(updatedList);
   };
 
   return (
-    <div className="addlist">
+    <div className="addList">
       <div className="list">
         {list.map((item, index) => (
           <div
@@ -34,19 +37,20 @@ export default function Addlist(props) {
           </div>
         ))}
       </div>
-      <div className="addlistinput">
+
+      <div className="addListInput">
         <input
           type="text"
           value={input}
           onChange={(data) => setInput(data.target.value)}
         />
-        <button onClick={input !== "" ? addlist : null}>ADD</button>
+        <button onClick={addList}>ADD</button>
       </div>
     </div>
   );
 }
 
-Addlist.propTypes = {
+AddList.propTypes = {
   list: PropTypes.array.isRequired,
-  setlist: PropTypes.func.isRequired,
+  setList: PropTypes.func.isRequired,
 };

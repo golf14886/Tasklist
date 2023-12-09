@@ -3,7 +3,7 @@
   margin: 0;
   box-sizing: border-box;
 }
-.contaner {
+.container {
   margin-top: 5rem;
   display: flex;
   flex-direction: column;

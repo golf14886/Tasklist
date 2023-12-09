@@ -1,13 +1,17 @@
 import { useState } from "react";
-import Addlist from "./Components/Addlist";
+import AddList from "./Components/AddList";
 import "./App.css";
 
 export default function App() {
-  const [list, setlist] = useState([]);
+  const [list, setList] = useState([]);
+
   return (
-    <div className="contaner">
+    <div className="container">
       <h1>Tasklist</h1>
-      <Addlist list={list} setlist={setlist} />
+      <AddList list={list} setList={setList} />
+
+      {/* <List/>
+      <InputForm/> */}
     </div>
   );
 }
