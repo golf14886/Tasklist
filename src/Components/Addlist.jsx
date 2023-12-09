@@ -54,3 +54,15 @@ AddList.propTypes = {
   list: PropTypes.array.isRequired,
   setList: PropTypes.func.isRequired,
 };
+
+
+// [{ 
+//   id: "912114534",
+//   text: "water the plane", 
+//   completed: false 
+// },
+// { 
+//   id: "912114535",
+//   text: "water the plane2", 
+//   completed: false 
+// }]
