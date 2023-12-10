@@ -1,5 +1,7 @@
 import { useState } from "react";
-import AddList from "./Components/AddList";
+// import AddList from "./components/AddList";
+import { InputForm } from "./components/InputForm";
+import { List } from "./components/List";
 import "./App.css";
 
 export default function App() {
@@ -8,10 +10,8 @@ export default function App() {
   return (
     <div className="container">
       <h1>Tasklist</h1>
-      <AddList list={list} setList={setList} />
-
-      {/* <List/>
-      <InputForm/> */}
+      <List list={list} setList={setList} />
+      <InputForm list={list} setList={setList} />
     </div>
   );
 }
