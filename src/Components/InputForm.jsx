@@ -3,11 +3,19 @@ import { v4 as uuidv4 } from "uuid";
 import { useState } from "react";
 import GlobalPropTypes from "./GlobalPropTypes";
 
-const StyledInput = styled.div`
+const StyledInputContainer = styled.div`
   display: flex;
-  justify-items: center;
-  position: fixed;
-  bottom: 1rem;
+  padding: 1rem;
+`;
+
+const StyledInput = styled.input`
+  width: 30rem;
+  height: 2rem;
+`;
+
+const StyledButton = styled.button`
+  width: 5rem;
+  margin-left: 0.3rem;
 `;
 
 export const InputForm = (props) => {
@@ -16,24 +24,23 @@ export const InputForm = (props) => {
 
   const addList = () => {
     if (input !== "") {
-      setList([...list, { id: uuidv4(), text: input, completed: false }]);
+      const newItem = { id: uuidv4(), text: input, completed: false };
+      const updatedList = [...list, newItem];
+      setList(updatedList);
+      localStorage.setItem("myList", JSON.stringify(updatedList));
       setInput("");
     }
   };
 
   return (
-    <div>
-      <div className="addListInput">
-        <StyledInput>
-          <input
-            type="text"
-            value={input}
-            onChange={(data) => setInput(data.target.value)}
-          />
-          <button onClick={addList}>ADD</button>
-        </StyledInput>
-      </div>
-    </div>
+    <StyledInputContainer>
+      <StyledInput
+        type="text"
+        value={input}
+        onChange={(data) => setInput(data.target.value)}
+      ></StyledInput>
+      <StyledButton onClick={addList}>ADD</StyledButton>
+    </StyledInputContainer>
   );
 };
 

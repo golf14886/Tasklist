@@ -16,16 +16,32 @@ const StyledEdit = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+`;
 
-  input {
-    margin-top: 5rem;
-    width: 50vw;
-    height: 20vh;
-  }
-  button {
-    padding: 5px;
-    margin-top: 0.5rem;
-  }
+const StyledEditBox = styled.input`
+  margin-top: 5rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  border-radius: 5px;
+  width: 50vw;
+  height: 30vw;
+  padding: 1vw;
+  text-align: center;
+`;
+
+const StyledButtonClose = styled.button`
+  width: 4rem;
+  height: 2rem;
+  border-radius: 20px;
+  background-color: white;
+`;
+
+const StyledButtonSave = styled.button`
+  margin-right: 1rem;
+  width: 4rem;
+  height: 2rem;
+  border-radius: 20px;
+  background-color: white;
 `;
 
 export const Edit = (props) => {
@@ -42,21 +58,28 @@ export const Edit = (props) => {
   };
 
   const update = () => {
-    setList((prevList) =>
-      prevList.map((item) =>
-        item.id === itemID ? { ...item, text: valueForInput } : item
-      )
+    const updatedList = list.map((item) =>
+      item.id === itemID ? { ...item, text: valueForInput } : item
     );
+
+    setList(updatedList);
+    localStorage.setItem("myList", JSON.stringify(updatedList));
     setEditItemId(false);
   };
 
   return (
     <>
       <StyledEdit>
-        <input type="text" value={valueForInput} onChange={handleInputChange} />
+        <StyledEditBox
+          type="text"
+          value={valueForInput}
+          onChange={handleInputChange}
+        />
         <div>
-          <button onClick={update}>Save</button>
-          <button onClick={() => setEditItemId(false)}>close</button>
+          <StyledButtonSave onClick={update}>Save</StyledButtonSave>
+          <StyledButtonClose onClick={() => setEditItemId(false)}>
+            close
+          </StyledButtonClose>
         </div>
       </StyledEdit>
     </>
