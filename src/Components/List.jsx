@@ -1,150 +1,202 @@
 import { useState, useEffect } from "react";
-import GlobalPropTypes from "./GlobalPropTypes";
-import { Edit } from "./Edit";
+import PropTypes from "prop-types";
 import { styled } from "styled-components";
+import {
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faTrash,
+  faPenToSquare,
+  faSave,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { db } from "../firebase/firebase";
+import ToggleSwitch from "./ToggleSwitch";
+import { EditButton, EditButtonText } from "./EditButtonWithIcon";
+import { SaveButton, SaveIcon, SaveButtonText } from "./SaveButtonComponent";
+import {
+  CloseButton,
+  CloseIcon,
+  CloseButtonText,
+} from "./CloseButtonComponent";
+import ListSyleItem from "./ListSyle";
 
-const StyleListBox = styled.div`
+const DeleteButton = styled.button`
+  background-color: #f05454;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
   display: flex;
-  flex-direction: column;
-  margin: 1rem 20rem;
-  border-radius: 1rem;
-  background-color: #d3d3d395;
-`;
-
-const StyleList = styled.div`
-  display: grid;
-  grid-template-columns: auto auto auto;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  margin: 1rem 2rem;
-  height: 3rem;
-  background-color: white;
-  border-radius: 10rem;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  @media (max-width: 500px) {
+    margin-left: -50px;
+    transform: scale(0.8, 0.8);
+    height: 2.7rem;
+    width: 5rem;
+  }
+  &:hover {
+    background-color: #ff2c2c;
+  }
 `;
 
-const StyleEdit = styled.img`
-  width: 20px;
-  height: 20px;
-  margin-right: 1rem;
-  position: relative;
-  bottom: 5px;
+const StyleEdit = styled.div`
+  display: flex;
+  align-items: center;
 `;
 
-const StyleCheckbox = styled.input`
-  margin-right: 1.5rem;
-  transform: scale(1.5);
-  transform-origin: center;
+const InputEditSlyle = styled.input`
+  width: 26rem;
+  margin-left: 1rem;
+  padding: 0.2rem;
+  font-size: 1rem;
+  padding-left: 1rem;
 `;
 
-const StyleListDelete = styled.svg`
-  width: 25px;
-  height: 25px;
-  position: relative;
-  bottom: 8px;
-`;
-
-const StyleItem = styled.div`
-  text-align: center;
-`;
-const StyleCheng = styled.div`
-  display: grid;
-  align-self: flex-end;
-  grid-template-columns: auto auto auto;
-`;
-
-export const List = (props) => {
-  const { list, setList } = props;
-  const [editItemId, setEditItemId] = useState(false);
-  const [itemID, setItemID] = useState("");
-  const [completed, setCompleted] = useState(false);
-
-  const getData = () => {
-    const item = localStorage.getItem("myList");
-    if (item) {
-      return JSON.parse(item);
-    }
-    return [];
-  };
+export const List = ({ input, list, setList }) => {
+  const [startEditor, setStartEditor] = useState(null);
+  const [updateValue, setUpdateValue] = useState("");
+  const [startUpdate, setstartUpdate] = useState(false);
 
   useEffect(() => {
-    const data = getData();
-    setList(data);
-  }, [setList]);
-
-  const onClickCompleted = (id) => {
-    const data = getData();
-    const updatedList = data.map((item) => {
-      if (item.id === id) {
-        setCompleted(!completed);
-        return { ...item, completed: completed };
+    const getData = async () => {
+      try {
+        const queryData = await getDocs(collection(db, "list"));
+        const dataArr = [];
+        queryData.forEach((doc) => {
+          dataArr.push({
+            docId: doc.id,
+            text: doc.data().text,
+            completed: doc.data().completed,
+          });
+        });
+        const sortedDataArr = dataArr.sort((a, b) => {
+          if (a.completed && !b.completed) return 1;
+          if (!a.completed && b.completed) return -1;
+          return 0;
+        });
+        setList(sortedDataArr);
+      } catch (error) {
+        console.error(error);
       }
-      return item;
-    });
-    setList(updatedList);
-    localStorage.setItem("myList", JSON.stringify(updatedList));
+    };
+    getData();
+  }, [input, startUpdate, setList]);
+
+  const updateList = async (id, newText) => {
+    if (newText !== "") {
+      try {
+        const documentRef = doc(db, "list", id);
+        await updateDoc(documentRef, { text: newText });
+        setstartUpdate(!startUpdate);
+        console.log("อัปเดตเอกสารสำเร็จ");
+        setStartEditor(null);
+      } catch (error) {
+        console.log("updateList" + error);
+      }
+    } else {
+      setStartEditor(null);
+    }
   };
 
-  const sortedList = () => {
-    const list = getData();
-    return list.sort((a, b) => a.completed - b.completed);
+  const startEdit = (id) => {
+    setStartEditor(id);
   };
 
-  const onClickEdit = (id) => {
-    setEditItemId(!editItemId);
-    setItemID(id);
+  const closeEdit = () => {
+    setStartEditor(null);
   };
 
-  const deleteList = (id) => {
-    const data = getData();
-    const updatedList = data.filter((item) => item.id !== id);
-    localStorage.setItem("myList", JSON.stringify(updatedList));
-    setList(updatedList);
+  const deleteList = async (id) => {
+    try {
+      const documentRef = doc(db, "list", id);
+      deleteDoc(documentRef);
+      setstartUpdate(!startUpdate);
+      console.log("ลบเอกสารสำเร็จ");
+    } catch (error) {
+      console.log("deletelist" + error);
+    }
   };
 
   return (
-    <StyleListBox>
-      {sortedList().map((item) => (
-        <StyleList
-          key={item.id}
-          style={{ textDecoration: item.completed ? "line-through" : "none" }}
-        >
-          <div></div>
-          <StyleItem>{item.text}</StyleItem>
-          <StyleCheng>
-            <StyleCheckbox
-              type="checkbox"
-              checked={item.completed}
-              onChange={() => onClickCompleted(item.id)}
-              onClick={() => onClickCompleted(item.id)}
-            ></StyleCheckbox>
-            <StyleEdit
-              onClick={() => onClickEdit(item.id)}
-              src="./img/edit.png"
-              alt="Edit"
-            ></StyleEdit>
-            <StyleListDelete
-              onClick={() => deleteList(item.id)}
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-              viewBox="0 0 96 96"
-            >
-              <path d="m24,78c0,4.968 4.029,9 9,9h30c4.968,0 9-4.032 9-9l6-48h-60l6,48zm33-39h6v39h-6v-39zm-12,0h6v39h-6v-39zm-12,0h6v39h-6v-39zm43.5-21h-19.5c0,0-1.344-6-3-6h-12c-1.659,0-3,6-3,6h-19.5c-2.487,0-4.5,2.013-4.5,4.5s0,4.5 0,4.5h66c0,0 0-2.013 0-4.5s-2.016-4.5-4.5-4.5z" />
-            </StyleListDelete>
-          </StyleCheng>
-        </StyleList>
-      ))}
+    <div>
+      {list.map((item) => {
+        return (
+          <ListSyleItem key={item.docId}>
+            {startEditor === item.docId ? (
+              <StyleEdit>
+                <SaveButton onClick={() => updateList(item.docId, updateValue)}>
+                  <SaveIcon>
+                    <FontAwesomeIcon icon={faSave} />
+                  </SaveIcon>
+                  <SaveButtonText>Save</SaveButtonText>
+                </SaveButton>
 
-      {editItemId !== false && (
-        <Edit
-          setEditItemId={setEditItemId}
-          itemID={itemID}
-          list={list}
-          setList={setList}
-        />
-      )}
-    </StyleListBox>
+                <CloseButton onClick={() => closeEdit()}>
+                  <CloseIcon>
+                    <FontAwesomeIcon icon={faTimes} />
+                  </CloseIcon>
+                  <CloseButtonText>Close</CloseButtonText>
+                </CloseButton>
+                <InputEditSlyle
+                  type="text"
+                  defaultValue={item.text}
+                  onChange={(data) => setUpdateValue(data.target.value)}
+                />
+              </StyleEdit>
+            ) : (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                {item.text}
+              </div>
+            )}
+            <EditButton onClick={() => startEdit(item.docId)}>
+              <FontAwesomeIcon icon={faPenToSquare} />
+              <EditButtonText>Edit</EditButtonText>
+            </EditButton>
+
+            <DeleteButton onClick={() => deleteList(item.docId)}>
+              <FontAwesomeIcon
+                icon={faTrash}
+                style={{
+                  fontSize: "20px",
+                  marginRight: ".2rem",
+                  ...(window.innerWidth <= 500 && {
+                    fontSize: "15px",
+                  }),
+                }}
+              />
+              Delete
+            </DeleteButton>
+
+            <ToggleSwitch
+              completed={item.completed}
+              id={item.docId}
+              startUpdate={startUpdate}
+              setstartUpdate={setstartUpdate}
+            />
+          </ListSyleItem>
+        );
+      })}
+    </div>
   );
 };
-List.propTypes = GlobalPropTypes;
+
+List.propTypes = {
+  input: PropTypes.any,
+  //   input: PropTypes.string.isRequired,
+  list: PropTypes.array.isRequired,
+  setList: PropTypes.func.isRequired,
+};
