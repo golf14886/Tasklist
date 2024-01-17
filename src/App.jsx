@@ -1,31 +1,35 @@
-import { useState } from "react";
-import { styled } from "styled-components";
-import { InputForm } from "./components/InputForm";
-import { List } from "./components/List";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState, createContext } from "react";
 import "./App.css";
+import { LoginPage } from "./components/LoginPage/LoginPage";
+import Home from "./components/Home";
 
-const StyledHead = styled.div`
-  background-image: url("./img/top-view-person-writing-laptop-with-copy-space.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  height: 25rem;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  justify-content: space-between;
-`;
+export const UserContext = createContext();
 
 export default function App() {
-  const [list, setList] = useState([]);
+  const [docIdUser, setDocIdUser] = useState("");
+  const [addNewItem, setAddNewItem] = useState("");
+  const [Item, setItem] = useState([]);
 
   return (
-    <div className="container">
-      <StyledHead>
-        <h1 style={{ marginTop: "3rem" }}>TASKLIST</h1>
-        <InputForm list={list} setList={setList} />
-      </StyledHead>
-      <List list={list} setList={setList} />
-    </div>
+    <UserContext.Provider
+      value={{
+        Item,
+        setItem,
+        docIdUser,
+        setDocIdUser,
+        addNewItem,
+        setAddNewItem,
+      }}
+    >
+      <Router>
+        <div className="container">
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/home" element={<Home />} />
+          </Routes>
+        </div>
+      </Router>
+    </UserContext.Provider>
   );
 }
