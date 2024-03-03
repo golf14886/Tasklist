@@ -3,3 +3,23 @@
   margin: 0;
   box-sizing: border-box;
 }
+body {
+  background-color: white;
+  width: auto;
+  height: 100vh;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.success-message {
+  animation: slideDown 0.5s ease-out;
+}
