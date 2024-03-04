@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "./App";
 import Loading from "./Loading";
@@ -21,15 +20,17 @@ export default function Home() {
     setToken,
     statuFetchData,
     setStatuFetchData,
+    data,
+    setData,
   } = useContext(UserContext);
 
-  function chengList(list) {
-    if (list != null) {
+  function chengList(list, data) {
+    if (list != null && data != "undefined" && data != null) {
       setEmail(list.user.email);
-      return list.lists;
+      return data;
     }
   }
-  let lists = chengList(listData);
+  let lists = chengList(listData, data);
 
   function formatDate() {
     const date = new Date();
@@ -66,7 +67,6 @@ export default function Home() {
   }
 
   const chengEdit = (item) => {
-    console.log(item);
     if (item != onEdit) {
       setOnEdit(item);
     } else {
@@ -192,7 +192,11 @@ export default function Home() {
                 className="checkbox checkbox-primary"
               />
               {onEdit == item.ID ? (
-                <Edit item={item}></Edit>
+                <Edit
+                  item={item}
+                  updateData={updateData}
+                  setOnEdit={setOnEdit}
+                ></Edit>
               ) : (
                 <span className="label-text text-slate-950">{item.text}</span>
               )}

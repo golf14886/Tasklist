@@ -11,8 +11,6 @@ export default function Login() {
     setEmail,
     password,
     setPassword,
-    listData,
-    setListData,
     userLoggedIn,
     setUserLoggedIn,
   } = useContext(UserContext);

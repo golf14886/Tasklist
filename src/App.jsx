@@ -5,7 +5,6 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import { useState, createContext, useEffect } from "react";
-import axios from "axios";
 import "./App.css";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -17,6 +16,7 @@ import { fetchData } from "./fetchData";
 export const UserContext = createContext();
 
 export default function App() {
+  const [data, setData] = useState(null);
   const [listData, setListData] = useState(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -24,11 +24,6 @@ export default function App() {
   const [userCookie, setuserCookie] = useState("");
   const [token, setToken] = useState("");
   const [statuFetchData, setStatuFetchData] = useState(true);
-
-  function sortedListData() {
-    console.log("golf");
-  }
-  sortedListData();
 
   async function getCookies() {
     const cookies = await document.cookie;
@@ -43,6 +38,30 @@ export default function App() {
       }
     }
   }
+
+  async function sortedListData(listed) {
+    try {
+      if (listed != null) {
+        const list = await listed.lists;
+        const newList = list.sort((a, b) =>
+          a.cheng === b.cheng ? 0 : a.cheng ? 1 : -1
+        );
+        return newList;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  sortedListData(listData)
+    .then((sortedList) => {
+      if (setListData != null) {
+        setData(sortedList);
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+    });
+
   useEffect(() => {
     getCookies();
     if (token !== "") {
@@ -79,6 +98,8 @@ export default function App() {
         setToken,
         statuFetchData,
         setStatuFetchData,
+        data,
+        setData,
       }}
     >
       <BrowserRouter>
